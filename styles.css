@@ -14,10 +14,22 @@ body {
     margin-top: auto;
     margin-bottom: auto;
 }
+.functrow,
 .row{
     display: flex;
     gap: 10px;
     margin-bottom: 10px;
+}
+
+.image{
+    height: 20px;
+    width: 20px;
+}
+
+.functrow{
+    margin-top: auto;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.493);
+    width: 310px;
 }
 
 .button:hover{
@@ -27,8 +39,8 @@ body {
 
 .button{
     transition-property: font-size, background-color;
-    transition-timing-function: ease-out;
-    transition-duration: 0.3s;
+    transition-timing-function: linear;
+    transition-duration: 0.1s;
     display: flex;
     justify-content: center;
     justify-items: center;
@@ -77,6 +89,6 @@ body {
     background-color: black;
 }
 .buttons{
-    margin-top: auto;
+    margin-top: 20px;
     margin-bottom: 20px;
 }
