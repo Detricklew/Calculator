@@ -19,7 +19,16 @@ body {
     gap: 10px;
     margin-bottom: 10px;
 }
+
+.button:hover{
+    background-color: rgb(78, 77, 77);
+    font-size: medium;
+}
+
 .button{
+    transition-property: font-size, background-color;
+    transition-timing-function: ease-out;
+    transition-duration: 0.3s;
     display: flex;
     justify-content: center;
     justify-items: center;
@@ -30,6 +39,10 @@ body {
     background-color: rgb(51, 51, 51);
     border-radius: 50%;
     border-style: none;
+}
+
+.equal:hover{
+    background-color:rgb(8, 255, 8);
 }
 
 .equal{
