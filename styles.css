@@ -24,10 +24,19 @@ body {
 .image{
     height: 20px;
     width: 20px;
+    margin-bottom: 15px;
+}
+
+.history{
+    margin-left: 25px;
+}
+
+.backspace{
+    margin-right: 25px;
+    margin-left: auto;
 }
 
 .functrow{
-    margin-top: auto;
     border-bottom: 1px solid rgba(128, 128, 128, 0.493);
     width: 310px;
 }
@@ -66,7 +75,20 @@ body {
 }
 
 .input{
+    margin-top: 20px;
+    margin-right: 30px;
+    font-size: xx-large;
+    margin-left: auto;
     color: white;
+}
+
+.solution{
+    color: gray;
+    font-size: x-large;
+    margin-bottom: 30px;
+    margin-top: auto;
+    margin-right: 35px;
+    margin-left: auto;
 }
 
 .clear{
@@ -85,7 +107,7 @@ body {
     justify-content: center;
     align-items: center;
     width: 350px;
-    height: 800px;
+    height: 750px;
     background-color: black;
 }
 .buttons{
