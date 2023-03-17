@@ -3,11 +3,11 @@ let equation = [];
 function operate(array){
     if(array.length = 1) return array[0];
     //executing PEMDAS
-    //parentheis
+    //parenthesis
     let parantheis = search(array, ['(']);
     if(parantheis[0]){
         let startIndex = parantheis[1];
-        let endIndex = paranthesisSearch(array, startIndex);
+        let endIndex = parenthesisSearch(array, startIndex);
 
         array[startIndex] = array[startIndex].replace('(','');
     
@@ -15,7 +15,7 @@ function operate(array){
             array[endIndex]= array[endIndex].replace(')','')
         }
 
-        let newequation = paranthesisParser(array,startIndex,endIndex);
+        let newequation = parenthesisParser(array,startIndex,endIndex);
 
         let sum = operate(newequation);
 
@@ -42,7 +42,7 @@ function search(array, items){
     return [false];
 }
 
-function paranthesisParser(array, start, stop){
+function parenthesisParser(array, start, stop){
 
     if (start == stop){
         return [array[start]];
@@ -81,7 +81,7 @@ function arrayBuilder(array, start, stop, newValue){
     return newArray;
 }
 
-function paranthesisSearch(array, startIndex){
+function parenthesisSearch(array, startIndex){
     let paracheck = false;
     if(array[startIndex].includes(')')){
         return startIndex;
