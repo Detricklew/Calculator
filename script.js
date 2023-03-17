@@ -1,10 +1,52 @@
 let equation = [];
 
-function operate(){
+function operate(array){
+    if(array.length = 1) return array[0];
+    //executing PEMDAS
+    //parentheis
+    let parantheis = search(array, ['(']);
+    if(parantheis[0]){
+        let startIndex = parantheis[1];
+        let endIndex = paranthesisSearch(array, startIndex);
+
+        array[startIndex] = array[startIndex].replace('(','');
     
+        if(array[endIndex].toString().includes(')')){
+            array[endIndex]= array[endIndex].replace(')','')
+        }
+
+        let newequation = paranthesisParser(array,startIndex,endIndex);
+
+        let sum = operate(newequation);
+
+        let finalequation = arrayBuilder(array, startIndex, endIndex, sum);
+
+        return operate(finalequation);
+
+    }
+
+}
+
+
+
+function search(array, items){
+    for(let i = 0; i < array.length; i++){
+        let indexString = array[i].toString();
+       items.forEach(item =>{
+        if(indexString.includes(item)){
+            return [true, i];
+        }
+       })
+    }
+
+    return [false];
 }
 
 function paranthesisParser(array, start, stop){
+
+    if (start == stop){
+        return [array[start]];
+    }
     let newArray = [];
 
     for(let i = 0; i < array.length; i++){
@@ -20,6 +62,8 @@ function paranthesisParser(array, start, stop){
 }
 
 function arrayBuilder(array, start, stop, newValue){
+
+    if(start == stop) return [array[start]];
     let newArray =[];
 
     for(let i = 0; i < array.length; i++){
@@ -39,8 +83,11 @@ function arrayBuilder(array, start, stop, newValue){
 
 function paranthesisSearch(array, startIndex){
     let paracheck = false;
+    if(array[startIndex].includes(')')){
+        return startIndex;
+    }
 
-    for(let i = startIndex; i < array.length; i++){
+    for(let i = startIndex+1; i < array.length; i++){
         if(array[i].includes("(")){
             paracheck = true;
         }
