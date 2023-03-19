@@ -1,20 +1,103 @@
 let equation = [];
 
-let input;
-do{
-    input = prompt('input equation');
-    if(input != '='){
-        equation.push(input);
+let currentnum;
+
+let paranthesis = false;
+
+let num = false;
+
+let decimal = false;
+
+let funct = false;
+
+let perc = false;
+
+
+const numbers = document.querySelectorAll('.number');
+
+const functions = document.querySelectorAll('.func');
+
+functions.forEach(funct =>{
+    funct.addEventListener('click',loadFunction);
+})
+
+numbers.forEach(action =>{
+    action.addEventListener('click',loadNumber);
+});
+
+function loadNumber(e){
+    if(funct){
+        equation.push(currentnum);
+        currentnum = null;
+        funct = false;
+    }
+    if(e.target.textContent == '.'){
+        decimalCheck(e);
+        loadInput();
+        return;
+    }
+    if(!currentnum){
+        currentnum = e.target.textContent;
+        num = true;
+        loadInput()
+        return;
+    }
+    else{
+        currentnum = currentnum.toString() + e.target.textContent.toString();
+        loadInput()
+        return;
     }
 }
-while(input != '=');
 
-console.log(equation);
+function percentageCheck(e){
+    if(num){
+        currentnum = currentnum.toString() + e.target.textContent.toString();
+        perc = true;
+        return;
+    }
+}
 
-let final = operate(equation);
+function loadFunction(e){
+    console.log('here func');
+    if(e.target.textContent == "%"){
+        percentageCheck(e);
+        loadInput();
+        return;
+    }
+    if (!funct && currentnum){
+        equation.push(currentnum);
+        currentnum = null;
+        currentnum = e.target.textContent.toString();
+        funct = true;
+        loadInput()
+        return;
+    }
+    else if(funct && (e.target.textContent != currentnum )){
+        currentnum = e.target.textContent.toString();
+        loadInput()
+        return;
+    }
+    else{
+        return;
+    }
+}
 
-console.log(final);
+function loadInput(){
+    let input = document.querySelector('.input');
+    let display = equation.join("");
+    input.innerHTML = display + currentnum.toString();
+}
 
+function decimalCheck(e){
+    if(decimal){
+        return;
+    }
+    else{
+        console.log('here');
+        decimal = !decimal; 
+        currentnum = currentnum.toString() + e.target.textContent.toString();
+    }
+}
 function operate(array){
     if(array.length == 1) return array[0];
     //executing PEMDAS
