@@ -74,13 +74,26 @@ body {
 .function{
     color: #9cd260;
 }
-
-.input{
+.inputcontain{
+    margin-left: auto;
     margin-top: 20px;
     margin-right: 30px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column-reverse;
+}
+.input{
+    max-height: 110px;
     font-size: xx-large;
-    margin-left: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: right;
     color: white;
+    overflow-y: scroll;
+}
+
+.input::-webkit-scrollbar{
+    display: none;
 }
 
 .solution{

@@ -28,6 +28,10 @@ const clear = document.querySelector('.clear');
 
 clear.addEventListener('click',clearDisplay);
 
+function expo(x, f) {
+    return Number.parseFloat(x).toExponential(f);
+  }
+
 functions.forEach(funct =>{
     funct.addEventListener('click',loadFunction);
 })
