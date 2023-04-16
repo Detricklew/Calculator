@@ -133,6 +133,7 @@ function clearDisplay(){
     input.innerHTML = 0;
     stateChange('clear');
     previewOperation();
+    fontCheck(0);
     return;
 }
 
@@ -172,6 +173,7 @@ function startOperation(){
         if(solution.toString().length > 15) solution = expo(solution, 15);
         console.log(`hi solo ${solution} solution length ${solution.toString().length}`);
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".input");
+        fontCheck(solution.toLocaleString("en-US").length);
         loadSolution('', ".solution");
         perc = false;
         solutionCheck = true;
@@ -386,12 +388,14 @@ function loadDisplay(){
     let display = '';
     let functcheck = false;
     let pareload = checkParenthesis();
+    let lengths = 0;
     let functions = ['%','x','-','+','÷']
     for (let i = 0; i < equation.length; i++){
         if(pareload){
             if (i == pareload[0] || i == pareload[1]){
                 console.log('check here');
                 display = display + `<span class ="function">${equation[i]}</span>`;
+                lengths++;
                 continue;
             }
         }
@@ -399,14 +403,17 @@ function loadDisplay(){
             if(equation[i] == functions[j]){
                 display = display + `<span class ="function">${equation[i]}</span>`;
                 functcheck = true;
+                lengths++;
             }
         }
         if(!functcheck){
             if(equation[i]== "(" || equation[i] == ")"){
                 display = display + equation[i];
+                lengths++;
                 continue;
             }
             let convert = Number(equation[i])
+            lengths += equation[i].length;
             display = display + `<span>${convert.toLocaleString("en-US")}</span>`;
         }
         functcheck = false;
@@ -416,15 +423,35 @@ function loadDisplay(){
             if(currentnum == functions[i]){
                 display = display + `<span class ="function">${currentnum}</span>`;
                 functcheck = true;
+                lengths++;
             }
         }
         if(!functcheck){
+            lengths += currentnum.toString().length;
             let convert = Number(currentnum);
             display = display + `<span>${convert.toLocaleString("en-US")}</span>`;
         }
     }
+    console.log(`length here ${lengths}`);
+    fontCheck(lengths);
+
 
     return display;
+}
+
+function fontCheck(length){
+    let font = document.querySelector('.input');
+    if(length > 13 && length < 19){
+        font.style.cssText = "font-size: 28px;";
+        return;
+    }
+    else if(length >= 19){
+        font.style.cssText = "font-size: 24px;";
+        return;
+    }else{
+        font.style.cssText = "";
+        return;
+    }
 }
 
 function decimalCheck(e){

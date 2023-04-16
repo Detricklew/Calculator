@@ -69,6 +69,17 @@ body {
 .equal{
     background-color: #427e04;
 }
+.func{
+    font-size: 28px;
+}
+
+.func.para{
+    font-size: 20px;
+}
+
+.func.perc{
+    font-size: 24px;
+}
 
 .func,
 .function{
@@ -83,8 +94,12 @@ body {
     flex-direction: column-reverse;
 }
 .input{
+    transition-property: font-size;
+    transition-timing-function: linear;
+    transition-duration: 0.1s;
     max-height: 110px;
-    font-size: xx-large;
+    max-width: 300px;
+    font-size: 38px;
     display: flex;
     flex-wrap: wrap;
     justify-content: right;
@@ -107,11 +122,12 @@ body {
 
 .clear{
     color: #f86f69;
+    font-size: 24px;
 }
 
 .number{
     color: #fafafa;
-    font-size: xx-large;
+    font-size: 26px;
 }
 
 
