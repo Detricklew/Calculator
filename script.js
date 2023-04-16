@@ -18,6 +18,8 @@ let division = false;
 
 let solutionCheck = false;
 
+let warningcheck = false;
+
 const numbers = document.querySelectorAll('.number');
 
 const functions = document.querySelectorAll('.func');
@@ -102,14 +104,20 @@ function loadNumber(e){
 }
 
 function displayWarning(warning){
+    if (warningcheck){
+        return;
+    }
     display = document.querySelector(".warning");
     if(display.classList.contains("show")){
         display.classList.remove("show");
     }
     display.innerHTML = warning;
     display.classList.toggle("show");
+    warningcheck = true;
     window.setTimeout(function(){
         display.classList.remove("show");
+        warningcheck = false;
+
     },4000);
     return;
 }
