@@ -98,6 +98,7 @@ body {
 
 .number{
     color: #fafafa;
+    font-size: xx-large;
 }
 
 
@@ -114,4 +115,24 @@ body {
 .buttons{
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+.notification{
+    margin-top: -95px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.warning{
+    width: auto;
+    background-color: #555;
+    opacity: 0.9;
+    color: #fff;
+    text-align: center;
+    border-radius: 15px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
 }
