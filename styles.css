@@ -126,9 +126,10 @@ body {
 }
 
 .warning{
+    visibility: hidden;
     width: auto;
     background-color: #555;
-    opacity: 0.9;
+    opacity: 0.85;
     color: #fff;
     text-align: center;
     border-radius: 15px;
@@ -136,3 +137,21 @@ body {
     position: absolute;
     z-index: 1;
 }
+
+.warning.show{
+    visibility: visible;
+    -webkit-animation: fadeIn 3s linear forwards;
+    animation: fadeIn 3s linear forwards;
+}
+
+
+@-webkit-keyframes fadeIn {
+    0%,10%,86%,100% {opacity: 0;}
+    11%,85% {opacity: 0.85;}
+  }
+  
+  @keyframes fadeIn {
+    0%,10%,86%,100% {opacity: 0;}
+    11%,85% {opacity:0.85 ;}
+  }
+

@@ -17,9 +17,6 @@ let perc = false;
 let division = false;
 
 let solutionCheck = false;
-function expo(x, f) {
-    return Number.parseFloat(x).toExponential(f);
-  }
 
 const numbers = document.querySelectorAll('.number');
 
@@ -90,12 +87,31 @@ function loadNumber(e){
             stateChange('number');
         }
         console.log('solutionchack');
-        if(checkLength()) return;
+        if(checkLength()){
+            let check = displayWarning("Can't enter more than 15 digits.");
+            if(!check){
+                displayWarning("Can't enter more than 15 digits.");
+            }
+            return;
+        } ;
         currentnum = currentnum.toString() + e.target.textContent.toString();
         loadInput();
         previewOperation();
         return;
     }
+}
+
+function displayWarning(warning){
+    display = document.querySelector(".warning");
+    if(display.classList.contains("show")){
+        display.classList.remove("show");
+    }
+    display.innerHTML = warning;
+    display.classList.toggle("show");
+    window.setTimeout(function(){
+        display.classList.remove("show");
+    },4000);
+    return;
 }
 
 function clearDisplay(){
