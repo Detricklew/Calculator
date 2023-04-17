@@ -420,8 +420,9 @@ function loadDisplay(){
                 continue;
             }
             let convert = Number(equation[i])
+            if(convert.toString().length > 15) convert = expo(convert, 15);
             lengths += equation[i].length;
-            display = display + `<span>${convert.toLocaleString("en-US")}</span>`;
+            display = display + `<span>${convert.toLocaleString("en-US").toLocaleUpperCase()}</span>`;
         }
         functcheck = false;
     }
@@ -436,7 +437,8 @@ function loadDisplay(){
         if(!functcheck){
             lengths += currentnum.toString().length;
             let convert = Number(currentnum);
-            display = display + `<span>${convert.toLocaleString("en-US")}</span>`;
+            if(convert.toString().length > 15) convert = expo(convert, 15);
+            display = display + `<span>${convert.toLocaleString("en-US").toLocaleUpperCase()}</span>`;
         }
     }
     console.log(`length here ${lengths}`);
