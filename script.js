@@ -181,6 +181,9 @@ function startOperation(){
         currentnum = solution;
     }
     else{
+        if(equation.length){
+            displayWarning("Invalid format used.");
+        }
         return;
     }
 }
