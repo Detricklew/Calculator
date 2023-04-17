@@ -328,6 +328,10 @@ function parenthesisLoader(){
 
 function loadSolution(value, destination){
     let display = document.querySelector(destination);
+    if(destination == ".input"){
+        display.innerHTML = `<span class ="function">${value}</span>`;
+        return;
+    }
     display.innerHTML = value;
     return;
 }
