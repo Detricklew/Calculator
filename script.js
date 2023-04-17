@@ -156,7 +156,7 @@ function previewOperation(){
         solution = Math.round((solution + Number.EPSILON) * 100) / 100;
         if(solution.toString().length > 15) solution = expo(solution, 15);
         console.log(`hi solo ${solution} solution length ${solution.toString().length}`);
-        loadSolution(solution.toLocaleString("en-US"), ".solution");
+        loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".solution");
     }
     else{
         console.log("preview");
