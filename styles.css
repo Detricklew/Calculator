@@ -41,7 +41,7 @@ body {
   width: 310px;
 }
 
-.button:hover {
+.button:hover,.func.para:hover,.func.perc:hover {
   background-color: rgb(78, 77, 77);
   font-size: medium;
 }
