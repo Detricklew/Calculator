@@ -1,18 +1,32 @@
-let equation = [];
+function equation(){
+    this.equation = [];
 
-let state = [];
+    this.state = [];
+
+    this.sum;
+
+    this.currentState = {
+        paranthesiscount: 0,
+        num: false,
+        funct: false,
+    }
+    this.loadState = function (){
+        let newstate = {};
+        this.equation.push(currentnum);
+        newstate.paranthesiscount = this.currentState.paranthesiscount;
+        newstate.num = this.currentState.num;
+        newstate.funct = this.currentState.funct;
+        this.state.push(newstate);
+    }
+}
+
+let currentequation = new equation;
+
+let equations = [];
+
 
 let currentnum;
 
-let paranthesiscount = 0;
-
-let num = false;
-
-let decimal = false;
-
-let funct = false;
-
-let perc = false;
 
 let division = false;
 
@@ -45,7 +59,7 @@ function loadNumber(e){
         startOperation();
         return;
     }
-    if(perc || equation[equation.length - 1] == ")" && !currentnum) loadMultiplty();
+    if(percCheck() || currentequation.equation[currentequation.equation.length - 1] == ")" && !currentnum) loadMultiplty();
     if(e.target.textContent == "+/-"){
         let check = numCheck();
         if(check){
@@ -72,8 +86,8 @@ function loadNumber(e){
         previewOperation();
         return;
     }
-    if(funct){
-        equation.push(currentnum);
+    if(currentequation.currentState.funct){
+        currentequation.loadState();
         currentnum = e.target.textContent;
         stateChange('number')
         loadInput();
@@ -89,7 +103,7 @@ function loadNumber(e){
             previewOperation();
             return;
         }
-        if(perc){
+        if(percCheck()){
             stateChange('number');
         }
         console.log('solutionchack');
@@ -127,7 +141,7 @@ function displayWarning(warning){
 }
 
 function clearDisplay(){
-    equation = [];
+    currentequation.equation = [];
     currentnum = null
     let input = document.querySelector('.input');
     input.innerHTML = 0;
@@ -138,7 +152,7 @@ function clearDisplay(){
 }
 
 function loadMultiplty(){
-    if(currentnum) equation.push(currentnum);
+    if(currentnum) currentequation.loadState();
     currentnum = "x";
     stateChange('function');
     return;
@@ -146,11 +160,11 @@ function loadMultiplty(){
 
 function previewOperation(){
     let preview = [];
-    for(let i = 0; i < equation.length; i++){
-        preview.push(equation[i]);
+    for(let i = 0; i < currentequation.equation.length; i++){
+        preview.push(currentequation.equation[i]);
     }
     let newnum = currentnum;
-    if (!funct && preview.length){
+    if (!currentequation.currentState.funct && preview.length){
         if(newnum) preview.push(newnum);
         let solution = operate(preview);
         solution = Math.round((solution + Number.EPSILON) * 100) / 100;
@@ -166,22 +180,31 @@ function previewOperation(){
 }
 
 function startOperation(){
-    if (!funct && equation.length){
-        if(currentnum) equation.push(currentnum);
-        let solution = operate(equation);
+    let newequation = [];
+    for(let i = 0; i < currentequation.equation.length; i++){
+        newequation.push(currentequation.equation[i]);
+    }
+    if (!currentequation.currentState.funct && currentequation.equation.length){
+        if(currentnum) newequation.push(currentnum);
+        let solution = operate(newequation);
+        if(division){
+            displayWarning("Can't divide by zero.");
+            division = false;
+            return;
+        }
         solution = Math.round((solution + Number.EPSILON) * 100) / 100;
         if(solution.toString().length > 15) solution = expo(solution, 15);
         console.log(`hi solo ${solution} solution length ${solution.toString().length}`);
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".input");
         fontCheck(solution.toLocaleString("en-US").length);
         loadSolution('', ".solution");
-        perc = false;
         solutionCheck = true;
-        equation = [];
+        equations.push(currentequation);
+        currentequation = new equation;
         currentnum = solution;
     }
     else{
-        if(equation.length){
+        if(currentequation.equation.length){
             displayWarning("Invalid format used.");
         }
         return;
@@ -190,10 +213,10 @@ function startOperation(){
 
 function numCheck(){
     if(currentnum) currentnum = currentnum.toString(); 
-    if(!num){
+    if(!currentequation.currentState.num){
         return false;
     }
-    if(currentnum && num){
+    if(currentnum && currentequation.currentState.num){
         if(currentnum.includes('-')){
             console.log('hey');
              currentnum = currentnum.replace('-','');
@@ -210,41 +233,51 @@ function numCheck(){
 function stateChange(state){
     switch(state){
         case 'solution':
-            num = false;
+            currentequation.currentState.num = false;
             currentnum = null;
             solutionCheck = !solutionCheck;
             break;
         case 'number':
-            num = true;
-            funct = false;
+            currentequation.currentState.num = true;
+            currentequation.currentState.funct = false;
             break;
         case 'function':
             solutionCheck = false;
-            decimal = false;
-            num = false;
-            funct = true;
-            perc = false;
+            currentequation.currentState.num = false;
+            currentequation.currentState.funct = true;
             break;
         case 'clear':
-            decimal = false;
-            num = false;
-            funct = false;
-            perc = false;
+            currentequation.currentState.num = false;
+            currentequation.currentState.funct = false;
             solutionCheck = false;
-            paranthesiscount = 0;
+            currentequation.currentState.paranthesiscount = 0;
             break;
     }
 }
 
-function percentageCheck(e){
-    if(num && !perc){
-        equation.push((currentnum));
-        currentnum = e.target.textContent.toString();
-        perc = true;
-        return;
+function percentageCheck(){
+    if(!currentnum){
+        return false;
+    }
+    let percCheck = currentnum.toString();
+    if(currentequation.currentState.num && !percCheck.includes('%')){
+        return true;
     }
     else{
-        return;
+        return false;
+    }
+}
+
+function percCheck(){
+    if(!currentnum){
+        return false;
+    }
+    let percCheck = currentnum.toString();
+    if(percCheck.includes('%')){
+        return true;
+    }
+    else{
+        return false;
     }
 }
 
@@ -252,20 +285,27 @@ function loadFunction(e){
     console.log('here func');
     if(e.target.textContent == "( )"){
         parenthesisLoader();
-        if(equation.length){
+        if(currentequation.equation.length){
             loadInput();
             previewOperation();
         } 
         return;
     }
     if(e.target.textContent == "%"){
-        percentageCheck(e);
-        loadInput();
-        previewOperation();
-        return;
+        if(percentageCheck()){
+            currentequation.loadState();
+            currentnum = e.target.textContent.toString();
+            loadInput();
+            previewOperation();
+            return;
+        }
+        else{
+            return;
+        }
+
     }
-    if (!funct && currentnum){
-        equation.push(currentnum);
+    if (!currentequation.currentState.funct && currentnum){
+        currentequation.loadState();
         currentnum = null;
         currentnum = e.target.textContent.toString();
         if(e.target.textContent == "÷") {
@@ -279,7 +319,7 @@ function loadFunction(e){
         previewOperation();
         return;
     }
-    else if(!funct && equation[equation.length -1] == ')'){
+    else if(!currentequation.currentState.funct && currentequation.equation[currentequation.equation.length -1] == ')'){
         currentnum = null;
         currentnum = e.target.textContent.toString();
         stateChange('function');
@@ -287,7 +327,7 @@ function loadFunction(e){
         previewOperation();
         return;
     }
-    else if(funct && (e.target.textContent != currentnum )){
+    else if(currentequation.currentState.funct && (e.target.textContent != currentnum )){
         if(e.target.textContent == "÷") {
             division = true;
         }
@@ -305,24 +345,21 @@ function loadFunction(e){
 }
 
 function parenthesisLoader(){
-    if(!paranthesiscount && num) loadMultiplty();
-    if(funct && currentnum){
-        equation.push(currentnum);
+    if(!currentequation.currentState.paranthesiscount && currentequation.currentState.num) loadMultiplty();
+    if(currentequation.currentState.funct && currentnum){
+        currentequation.loadState();
         currentnum = "(";
-        equation.push(currentnum);
+        currentequation.currentState.paranthesiscount++;
+        currentequation.loadState();
         currentnum = null;
-        console.log(equation);
-        paranthesiscount++;
         return;
     }
-    console.log(`paraKing para: ${paranthesiscount} num: ${num}`);
-    if (paranthesiscount && num){
-        console.log(`paraKing para: ${paranthesiscount} num: ${num}`);
-            if(currentnum) equation.push(currentnum);
+    if (currentequation.currentState.paranthesiscount && currentequation.currentState.num){
+            if(currentnum) currentequation.loadState();
             currentnum = ")";
-            equation.push(currentnum);
+            currentequation.currentState.paranthesiscount--;
+            currentequation.loadState();
             currentnum = null;
-            paranthesiscount--;
             return;
     }
 
@@ -347,6 +384,9 @@ function loadInput(){
 }
 
 function checkLength(){
+    if(!currentnum){
+        return false;
+    }
     if(currentnum.toString().length == 15){
         return true;
     }else{
@@ -359,26 +399,26 @@ function checkParenthesis(){
     let pare2;
     let paracount = 0;
     console.log(`equation length = ${equation.length}`);
-    for(let i = equation.length - 1; i >= 0; i--){
-        console.log(`current equation ${equation[i]} last equation ${equation[equation.length - 1]}`)
-        if (equation[equation.length - 1] != ')' || currentnum){
+    for(let i = currentequation.equation.length - 1; i >= 0; i--){
+        console.log(`current equation ${currentequation.equation[i]} last equation ${currentequation.equation[currentequation.equation.length - 1]}`)
+        if (currentequation.equation[currentequation.equation.length - 1] != ')' || currentnum){
             console.log("no para");
             pare1 = null;
             pare2 = null;
             break;
         }
-        if(paracount == 0 && equation[i].toString() == "("){
+        if(paracount == 0 && currentequation.equation[i].toString() == "("){
             console.log('para accept');
             pare1 = i;
-            pare2 = equation.length - 1;
+            pare2 = currentequation.equation.length - 1;
             break;
         }
-        if(i != equation.length - 1 && equation[i] == ")"){
+        if(i != currentequation.equation.length - 1 && currentequation.equation[i] == ")"){
             console.log("hi there");
             paracount++;
             continue;
         }
-        if(paracount && equation[i] == "("){
+        if(paracount && currentequation.equation[i] == "("){
             paracount--;
         }
     }
@@ -397,31 +437,35 @@ function loadDisplay(){
     let pareload = checkParenthesis();
     let lengths = 0;
     let functions = ['%','x','-','+','÷']
-    for (let i = 0; i < equation.length; i++){
+    for (let i = 0; i < currentequation.equation.length; i++){
         if(pareload){
             if (i == pareload[0] || i == pareload[1]){
                 console.log('check here');
-                display = display + `<span class ="function">${equation[i]}</span>`;
+                display = display + `<span class ="function">${currentequation.equation[i]}</span>`;
                 lengths++;
                 continue;
             }
         }
         for(let j = 0; j < functions.length; j++){
-            if(equation[i] == functions[j]){
-                display = display + `<span class ="function">${equation[i]}</span>`;
+            if(currentequation.equation[i] == functions[j]){
+                display = display + `<span class ="function">${currentequation.equation[i]}</span>`;
                 functcheck = true;
                 lengths++;
             }
         }
         if(!functcheck){
-            if(equation[i]== "(" || equation[i] == ")"){
-                display = display + equation[i];
+            if(currentequation.equation[i]== "(" || currentequation.equation[i] == ")"){
+                display = display + currentequation.equation[i];
                 lengths++;
                 continue;
             }
-            let convert = Number(equation[i])
+            let convert = Number(currentequation.equation[i])
+            let check = currentequation.equation[i].toString().split('');
+            if(check[check.length - 1] == '.'){
+                convert = convert + '.';
+            }
             if(convert.toString().length > 15) convert = expo(convert, 15);
-            lengths += equation[i].length;
+            lengths += currentequation.equation[i].length;
             display = display + `<span>${convert.toLocaleString("en-US").toLocaleUpperCase()}</span>`;
         }
         functcheck = false;
@@ -437,6 +481,10 @@ function loadDisplay(){
         if(!functcheck){
             lengths += currentnum.toString().length;
             let convert = Number(currentnum);
+            let check = currentnum.toString().split('');
+            if(check[check.length - 1] == '.'){
+                convert = convert + '.';
+            }
             if(convert.toString().length > 15) convert = expo(convert, 15);
             display = display + `<span>${convert.toLocaleString("en-US").toLocaleUpperCase()}</span>`;
         }
@@ -464,25 +512,27 @@ function fontCheck(length){
 }
 
 function decimalCheck(e){
-    if(decimal){
-        return;
+    if(currentnum){
+        let check = currentnum.toString();
+        if(check.includes('.')){
+            return;
+        }
     }
-    else if(!decimal && funct){
-        equation.push(currentnum);
-        funct = !funct;
-        decimal = !decimal;
+    if(currentequation.currentState.funct){
+        currentequation.loadState();
+        currentequation.currentState.funct = !currentequation.currentState.funct;
         currentnum = 0 + e.target.textContent.toString();
+        stateChange("number");
         return;
     }
-    else if(!decimal && !num){
+    else if(!currentequation.currentState.num){
         console.log(`here num`)
-        decimal = !decimal; 
         console.log(currentnum);
         currentnum = 0 + e.target.textContent.toString();
+        stateChange("number");
         console.log(currentnum);
     }
     else{
-        decimal = !decimal; 
         currentnum = currentnum + e.target.textContent.toString();
     }
 }
@@ -576,7 +626,6 @@ function operate(array){
 function search(array, items){
     for(let i = 0; i < array.length; i++){
         let indexString = array[i].toString();
-        
         for(let j = 0; j < items.length; j++){
             console.log(`${items[j]} = ${indexString}`);
             let test = indexString.includes(items[j]);
@@ -679,5 +728,8 @@ function multiply(a,b){
 }
 
 function divide(a,b){
+    if(b == 0){
+        division = true;
+    }
     return a / b;
 }
