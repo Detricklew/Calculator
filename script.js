@@ -34,6 +34,8 @@ let solutionCheck = false;
 
 let warningcheck = false;
 
+const backspace = document.querySelector('.backspace');
+
 const numbers = document.querySelectorAll('.number');
 
 const functions = document.querySelectorAll('.func');
@@ -41,6 +43,8 @@ const functions = document.querySelectorAll('.func');
 const clear = document.querySelector('.clear');
 
 clear.addEventListener('click',clearDisplay);
+
+backspace.addEventListener('click',loadBackspace);
 
 function expo(x, f) {
     return Number.parseFloat(x).toExponential(f);
@@ -198,6 +202,7 @@ function startOperation(){
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".input");
         fontCheck(solution.toLocaleString("en-US").length);
         loadSolution('', ".solution");
+        currentequation.equation.push(currentnum);
         solutionCheck = true;
         equations.push(currentequation);
         currentequation = new equation;
@@ -254,10 +259,75 @@ function stateChange(state){
             break;
     }
 }
+function loadBackspace(){
+    if(!currentequation.equation.length && !currentnum){
+        return;
+    }
+    if(currentnum){
+        if(currentnum.toString().length == 1){
+            currentnum = null;
+            unloadState();
+            loadInput()
+            return;
+        }
+        else{
+            let newnum = currentnum.toString().split('');
+            newnum.pop();
+            currentnum = newnum.toString().replace(',','');
+            console.log(`backspace num ${currentnum}`);
+            loadInput();
+            return;
+        }
+    }
+    if(!currentnum){
+        currentnum = currentequation.equation.pop();
+        console.log(`currentnum pop ${currentnum}`);
+        currentequation.state.pop();
+        if(currentnum.toString().length == 1){
+            currentnum = null;
+            unloadState();
+
+            loadInput()
+            return;
+        }
+        else{
+            let newnum = currentnum.toString().split('');
+            newnum.pop();
+            currentnum = newnum.toString().replace(',','');
+            console.log(`backspace num ${currentnum}`);
+            loadInput();
+            return;
+    }
+}
+}
+
+function unloadFunction(){
+    currentequation;
+}
+
+function unloadState(){
+    if(!currentequation.state.length){
+        currentequation.currentState.paranthesiscount = 0;
+        currentequation.currentState.num = false;
+        currentequation.currentState.funct = false;
+        return;
+    }
+    else{
+        let index = currentequation.state.length - 1;
+        currentequation.currentState.paranthesiscount = currentequation.state[index].paranthesiscount;
+        currentequation.currentState.num = currentequation.state[index].num;
+        currentequation.currentState.funct = currentequation.state[index].funct;
+    }
+
+}
 
 function percentageCheck(){
     if(!currentnum){
-        return false;
+        if(currentequation.equation[currentequation.equation.length -1] == '%'){
+            return true;
+        }else{
+            return false;
+        }
     }
     let percCheck = currentnum.toString();
     if(currentequation.currentState.num && !percCheck.includes('%')){
@@ -280,6 +350,7 @@ function percCheck(){
         return false;
     }
 }
+
 
 function loadFunction(e){
     console.log('here func');
@@ -308,12 +379,13 @@ function loadFunction(e){
         currentequation.loadState();
         currentnum = null;
         currentnum = e.target.textContent.toString();
-        if(e.target.textContent == "÷") {
-            division = true;
-        }
-        else{
-            division = false;
-        }
+        stateChange('function');
+        loadInput();
+        previewOperation();
+        return;
+    }
+    else if(!currentnum && currentequation.currentState.num){
+        currentnum = e.target.textContent.toString();
         stateChange('function');
         loadInput();
         previewOperation();
@@ -327,7 +399,7 @@ function loadFunction(e){
         previewOperation();
         return;
     }
-    else if(currentequation.currentState.funct && (e.target.textContent != currentnum )){
+    else if(currentequation.currentState.funct && (e.target.textContent != currentnum)){
         if(e.target.textContent == "÷") {
             division = true;
         }
@@ -432,6 +504,9 @@ function checkParenthesis(){
 }
 
 function loadDisplay(){
+    if(!currentnum && !currentequation.equation.length){
+        return 0;
+    }
     let display = '';
     let functcheck = false;
     let pareload = checkParenthesis();
