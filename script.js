@@ -171,6 +171,10 @@ function previewOperation(){
     if (!currentequation.currentState.funct && preview.length){
         if(newnum) preview.push(newnum);
         let solution = operate(preview);
+        if(division){
+            loadSolution('', ".solution");
+            return;
+        }
         solution = Math.round((solution + Number.EPSILON) * 100) / 100;
         if(solution.toString().length > 15) solution = expo(solution, 15);
         console.log(`hi solo ${solution} solution length ${solution.toString().length}`);
@@ -267,7 +271,10 @@ function loadBackspace(){
         if(currentnum.toString().length == 1){
             currentnum = null;
             unloadState();
-            loadInput()
+            unloadFunction();
+            unloadNumber();
+            loadInput();
+            previewOperation();
             return;
         }
         else{
@@ -276,6 +283,7 @@ function loadBackspace(){
             currentnum = newnum.toString().replace(',','');
             console.log(`backspace num ${currentnum}`);
             loadInput();
+            previewOperation();
             return;
         }
     }
@@ -286,8 +294,10 @@ function loadBackspace(){
         if(currentnum.toString().length == 1){
             currentnum = null;
             unloadState();
-
-            loadInput()
+            unloadFunction();
+            unloadNumber();
+            loadInput();
+            previewOperation();
             return;
         }
         else{
@@ -296,13 +306,34 @@ function loadBackspace(){
             currentnum = newnum.toString().replace(',','');
             console.log(`backspace num ${currentnum}`);
             loadInput();
+            previewOperation();
             return;
     }
 }
 }
 
 function unloadFunction(){
-    currentequation;
+    let functions = ['%','x','-','+','÷']
+    for(let i = 0; i < functions.length; i++ ){
+        if(currentequation.equation[currentequation.equation.length - 1] == functions[i]){
+            currentnum = currentequation.equation.pop();
+            currentequation.state.pop();
+            console.log(`function found`);
+            return;
+        }
+    }
+    return;
+}
+
+function unloadNumber(){
+    if(!currentnum){
+        if(currentequation.currentState.num){
+            currentnum = currentequation.equation.pop();
+            currentequation.state.pop();
+            return;
+        }
+    }
+    return;
 }
 
 function unloadState(){
@@ -448,9 +479,22 @@ function loadSolution(value, destination){
     return;
 }
 
+function loadBackspaceImage(){
+    const backspace = document.querySelector('.backspace');
+    if(!currentnum && !currentequation.equation.length){
+        backspace.src = 'images/backspace-sleep.png';
+        return;
+    }
+    else{
+        backspace.src = 'images/backspace.png';
+        return;
+    }
+}
+
 function loadInput(){
     let input = document.querySelector('.input');
     let display = loadDisplay();
+    loadBackspaceImage();
     input.innerHTML = display;
     return;
 }
@@ -534,14 +578,15 @@ function loadDisplay(){
                 lengths++;
                 continue;
             }
-            let convert = Number(currentequation.equation[i])
+            let convert = Number(currentequation.equation[i]);
+            convert = convert.toLocaleString("en-US");
             let check = currentequation.equation[i].toString().split('');
             if(check[check.length - 1] == '.'){
                 convert = convert + '.';
             }
             if(convert.toString().length > 15) convert = expo(convert, 15);
             lengths += currentequation.equation[i].length;
-            display = display + `<span>${convert.toLocaleString("en-US").toLocaleUpperCase()}</span>`;
+            display = display + `<span>${convert.toLocaleUpperCase()}</span>`;
         }
         functcheck = false;
     }
@@ -556,12 +601,13 @@ function loadDisplay(){
         if(!functcheck){
             lengths += currentnum.toString().length;
             let convert = Number(currentnum);
+            convert = convert.toLocaleString("en-US");
             let check = currentnum.toString().split('');
             if(check[check.length - 1] == '.'){
                 convert = convert + '.';
             }
             if(convert.toString().length > 15) convert = expo(convert, 15);
-            display = display + `<span>${convert.toLocaleString("en-US").toLocaleUpperCase()}</span>`;
+            display = display + `<span>${convert.toLocaleUpperCase()}</span>`;
         }
     }
     console.log(`length here ${lengths}`);
