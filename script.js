@@ -152,6 +152,7 @@ function clearDisplay(){
     stateChange('clear');
     previewOperation();
     fontCheck(0);
+    loadBackspaceImage();
     return;
 }
 
