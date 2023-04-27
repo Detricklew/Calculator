@@ -171,7 +171,7 @@ function previewOperation(){
     if (!currentequation.currentState.funct && preview.length){
         if(newnum) preview.push(newnum);
         let solution = operate(preview);
-        if(division){
+        if(division || isNaN(solution)){
             loadSolution('', ".solution");
             return;
         }
@@ -198,6 +198,10 @@ function startOperation(){
         if(division){
             displayWarning("Can't divide by zero.");
             division = false;
+            return;
+        }
+        if(isNaN(solution)){
+            displayWarning("Invalid format used.");
             return;
         }
         solution = Math.round((solution + Number.EPSILON) * 100) / 100;
