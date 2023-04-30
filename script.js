@@ -285,7 +285,8 @@ function loadBackspace(){
         else{
             let newnum = currentnum.toString().split('');
             newnum.pop();
-            currentnum = newnum.toString().replace(',','');
+            console.log(`b4 back ${newnum} and current num ${currentnum}`);
+            currentnum = newnum.toString().replaceAll(',','');
             console.log(`backspace num ${currentnum}`);
             loadInput();
             previewOperation();
@@ -308,7 +309,7 @@ function loadBackspace(){
         else{
             let newnum = currentnum.toString().split('');
             newnum.pop();
-            currentnum = newnum.toString().replace(',','');
+            currentnum = newnum.toString().replaceAll(',','');
             console.log(`backspace num ${currentnum}`);
             loadInput();
             previewOperation();
