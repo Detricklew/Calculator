@@ -489,10 +489,12 @@ function loadBackspaceImage(){
     const backspace = document.querySelector('.backspace');
     if(!currentnum && !currentequation.equation.length){
         backspace.src = 'images/backspace-sleep.png';
+        backspace.classList.toggle("hover");
         return;
     }
     else{
         backspace.src = 'images/backspace.png';
+        backspace.classList.toggle("hover");
         return;
     }
 }
