@@ -10,6 +10,88 @@ body {
   padding: 0;
 }
 
+.sideborder{
+  margin-top: 20px;
+  margin-left: auto;
+  border-right: 1px solid rgba(128, 128, 128, 0.493);
+  height: 395px;
+  overflow: hidden;
+}
+
+.clearhistory{
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+}
+
+.clearbutton{
+  color: white;
+  font-size: 14px;
+  background-color: #555;
+  border-radius: 15px;
+  border-style: none;
+  padding: 6px 45px;
+  cursor: grab;
+}
+
+.clearbutton:hover{
+  background-color: #7e7d7d;
+}
+
+.equationcontainer{
+  display: flex;
+  flex-direction: column;
+  height: 350px;
+  max-height: 350px;
+  min-height: 350px;
+  margin-right: 30px;
+  overflow-y: scroll;
+}
+
+.equationcontainer > :first-child{
+  margin-top: auto !important;
+}
+.equation,.sum,.history,.backspace{
+  font-size: 20px;
+  text-align: right;
+  margin-left: 10px;
+}
+
+.equation,.sum,.history,.backspace,.clearbutton{
+  transition-property: background-color;
+  transition-timing-function: linear;
+  transition-duration: 0.1s;
+}
+
+.equation{
+
+  display: flex;
+  justify-content: right;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.sum{
+margin-left: auto;
+margin-bottom: 20px;
+color: #9cd260;
+}
+
+.equations{
+  visibility: hidden;
+  color: white;
+  width: 255px;
+  height: 450px;
+  background-color: #010101;
+  border-radius: 36px;
+  margin-left: -96px;
+  margin-top: 300px;
+  position: fixed;
+  z-index: 1;
+}
+
 .container {
   margin-top: auto;
   margin-bottom: auto;
@@ -29,11 +111,15 @@ body {
 
 .history {
   margin-left: 25px;
+  border-radius: 25px;
+  padding: 5px;
 }
 
 .backspace {
   margin-right: 25px;
+  border-radius: 25px;
   margin-left: auto;
+  padding: 5px;
 }
 
 .functrow {
@@ -44,6 +130,12 @@ body {
 .button:hover,.func.para:hover,.func.perc:hover {
   background-color: rgb(78, 77, 77);
   font-size: medium;
+  cursor: grab;
+}
+
+.hover:hover{
+  background-color: rgb(78, 77, 77);
+  cursor: grab;
 }
 
 .button {
@@ -107,7 +199,7 @@ body {
   overflow-y: scroll;
 }
 
-.input::-webkit-scrollbar {
+.input::-webkit-scrollbar, .equationcontainer::-webkit-scrollbar {
   display: none;
 }
 
@@ -163,7 +255,7 @@ body {
   border-radius: 15px;
   padding: 8px;
   position: absolute;
-  z-index: 1;
+  z-index: 2;
 }
 
 .warning.show {
