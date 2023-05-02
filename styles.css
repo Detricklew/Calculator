@@ -74,9 +74,16 @@ body {
 }
 
 .sum{
-margin-left: auto;
-margin-bottom: 20px;
-color: #9cd260;
+  display: flex;
+  justify-content: right;
+  margin-bottom: 20px;
+  color: #9cd260;
+}
+
+.calculatorimage{
+  height: 20px;
+  width: 20px;
+  margin-bottom: 15px;
 }
 
 .equations{
@@ -90,6 +97,10 @@ color: #9cd260;
   margin-top: 300px;
   position: fixed;
   z-index: 1;
+}
+
+.equations.show{
+  visibility: visible;
 }
 
 .container {
