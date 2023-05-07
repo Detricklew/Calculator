@@ -772,10 +772,6 @@ function loadFunction(e){
 function parenthesisLoader(){
     if(!currentequation.currentState.paranthesiscount && currentequation.currentState.num) loadMultiplty();
     if(currentequation.currentState.funct && currentnum){
-        if(isNaN(currentnum)){
-            displayWarning("Invalid format.");
-            return;
-        }
         currentequation.loadState();
         currentnum = "(";
         currentequation.currentState.paranthesiscount++;
@@ -784,7 +780,7 @@ function parenthesisLoader(){
         return;
     }
     if (currentequation.currentState.paranthesiscount && currentequation.currentState.num){
-            if(isNaN(currentnum)){
+            if(isNaN(currentnum) && currentnum !='%'){
                 displayWarning("Invalid format.");
                 return;
             }
