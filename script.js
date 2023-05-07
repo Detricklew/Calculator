@@ -624,7 +624,7 @@ function unloadFunction(){
 
 function unloadNumber(){
     if(!currentnum){
-        if(currentequation.currentState.num){
+        if(currentequation.currentState.num && currentequation.equation[currentequation.equation.length-1] != ")" && currentequation.equation[currentequation.equation.length-1] != "("){
             currentnum = currentequation.equation.pop();
             currentequation.state.pop();
             return;
