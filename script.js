@@ -844,31 +844,31 @@ function checkLength(number,length){
     }
 }
 
-function checkParenthesis(){
+function checkParenthesis(array){
     let pare1;
     let pare2;
     let paracount = 0;
     console.log(`equation length = ${equation.length}`);
-    for(let i = currentequation.equation.length - 1; i >= 0; i--){
-        console.log(`current equation ${currentequation.equation[i]} last equation ${currentequation.equation[currentequation.equation.length - 1]}`)
-        if (currentequation.equation[currentequation.equation.length - 1] != ')' || currentnum){
+    for(let i = array.equation.length - 1; i >= 0; i--){
+        console.log(`current equation ${array.equation[i]} last equation ${array.equation[currentequation.equation.length - 1]}`)
+        if (array.equation[array.equation.length - 1] != ')' || currentnum){
             console.log("no para");
             pare1 = null;
             pare2 = null;
             break;
         }
-        if(paracount == 0 && currentequation.equation[i].toString() == "("){
+        if(paracount == 0 && array.equation[i].toString() == "("){
             console.log('para accept');
             pare1 = i;
-            pare2 = currentequation.equation.length - 1;
+            pare2 = array.equation.length - 1;
             break;
         }
-        if(i != currentequation.equation.length - 1 && currentequation.equation[i] == ")"){
+        if(i != array.equation.length - 1 && array.equation[i] == ")"){
             console.log("hi there");
             paracount++;
             continue;
         }
-        if(paracount && currentequation.equation[i] == "("){
+        if(paracount && array.equation[i] == "("){
             paracount--;
         }
     }
@@ -887,7 +887,7 @@ function loadDisplay(array){
     }
     let display = '';
     let functcheck = false;
-    let pareload = checkParenthesis();
+    let pareload = checkParenthesis(array);
     let lengths = 0;
     let functions = ['%','x','-','+','÷']
     for (let i = 0; i < array.equation.length; i++){
