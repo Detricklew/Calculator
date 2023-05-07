@@ -163,6 +163,10 @@ function loadNumber(e){
             displayWarning("Can't enter more than 15 digits.");
             return;
         } ;
+        if(isNaN(Number(currentnum.toString() + e.target.textContent.toString()))){
+            displayWarning("Invalid format.");
+            return;
+        }
         currentnum = currentnum.toString() + e.target.textContent.toString();
         loadInput();
         previewOperation();
@@ -210,25 +214,33 @@ function loadMultiplty(){
 
 function previewOperation(){
     let preview = [];
+    let expocheck;
     for(let i = 0; i < currentequation.equation.length; i++){
         preview.push(currentequation.equation[i]);
     }
     let newnum = currentnum;
-    if (!currentequation.currentState.funct && preview.length){
+    if(newnum){
+        expocheck = newnum.toString().includes('e');
+    }else{
+        expocheck = false;
+    }
+    if (!currentequation.currentState.funct && preview.length || expocheck && !solutionCheck){
         if(newnum) preview.push(newnum);
         let solution = operate(preview);
         if(division || isNaN(solution)){
             loadSolution('', ".solution");
             return;
         }
-        solution = solution.toLocaleString().replaceAll(',','');
+        solution = solution.toLocaleString("en-US").replaceAll(',','');
         console.log(`hi solo pre ${solution} solution length ${solution.toString().length}`);
         if(solution.toString().includes('.')){
             solution = Math.round((Number(solution) + Number.EPSILON) * 100) / 100;
         }
         console.log(`hi solo pre 2 ${solution} solution length ${solution.toString().length}`);
-        if(solution.toString().length > 15) solution = expo(solution, 15);
-        console.log(`hi solo ${solution} solution length ${solution.toString().length}`);
+        let truenum = solution.toLocaleString("en-US").replaceAll(',','');
+        if(solution.toString().length > 15) solution = expo(solution, 8);
+        if(truenum.toString().length > 15) solution = expo(Number(solution),8);
+        console.log(`hi solo ${solution.toLocaleString("en-US")} solution length ${solution.toString().length}`);
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".solution");
     }
     else{
@@ -240,10 +252,16 @@ function previewOperation(){
 
 function startOperation(){
     let newequation = [];
+    let expocheck;
     for(let i = 0; i < currentequation.equation.length; i++){
         newequation.push(currentequation.equation[i]);
     }
-    if (!currentequation.currentState.funct && currentequation.equation.length){
+    if(currentnum){
+        expocheck = currentnum.toString().includes('e');
+    }else{
+        expocheck = false;
+    }
+    if (!currentequation.currentState.funct && currentequation.equation.length || expocheck){
         if(currentnum) newequation.push(currentnum);
         let solution = operate(newequation);
         if(division){
@@ -255,13 +273,15 @@ function startOperation(){
             displayWarning("Invalid format used.");
             return;
         }
-        solution = solution.toLocaleString().replaceAll(',','');
-        console.log(`hi solo pre ${solution} solution length ${solution.toString().length}`);
+        solution = solution.toLocaleString("en-US").replaceAll(',','');
+        console.log(`hi solo pre ${solution.toLocaleString("en-US")} solution length ${solution.toString().length}`);
         if(solution.toString().includes('.')){
             solution = Math.round((Number(solution) + Number.EPSILON) * 100) / 100;
         }
         console.log(`hi solo pre 2 ${solution} solution length ${solution.toString().length}`);
-        if(solution.toString().length > 15) solution = expo(solution, 15);
+        let truenum = solution.toLocaleString("en-US").replaceAll(',','');
+        if(solution.toString().length > 15) solution = expo(solution, 8);
+        if(truenum.toString().length > 15) solution = expo(Number(solution),8);
         console.log(`hi solo ${solution} solution length ${solution.toString().length}`);
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".input");
         fontCheck(solution.toLocaleString("en-US").length);
@@ -476,6 +496,10 @@ function numCheck(){
         return false;
     }
     if(currentnum && currentequation.currentState.num){
+        if(isNaN(currentnum)){
+            displayWarning("Invalid format.");
+            return;
+        }
         if(currentnum.includes('-')){
             console.log('hey');
              currentnum = currentnum.replace('-','');
@@ -529,6 +553,7 @@ function loadBackspace(){
             return;
         }
         else{
+            if(solutionCheck) solutionCheck = !solutionCheck;
             let newnum = currentnum.toString().split('');
             newnum.pop();
             console.log(`b4 back ${newnum} and current num ${currentnum}`);
@@ -659,6 +684,10 @@ function loadFunction(e){
 
     }
     if (!currentequation.currentState.funct && currentnum){
+        if(isNaN(currentnum)){
+            displayWarning('Invalid Format.');
+            return;
+        }
         currentequation.loadState();
         currentnum = null;
         currentnum = e.target.textContent.toString();
@@ -702,6 +731,10 @@ function loadFunction(e){
 function parenthesisLoader(){
     if(!currentequation.currentState.paranthesiscount && currentequation.currentState.num) loadMultiplty();
     if(currentequation.currentState.funct && currentnum){
+        if(isNaN(currentnum)){
+            displayWarning("Invalid format.");
+            return;
+        }
         currentequation.loadState();
         currentnum = "(";
         currentequation.currentState.paranthesiscount++;
@@ -710,6 +743,10 @@ function parenthesisLoader(){
         return;
     }
     if (currentequation.currentState.paranthesiscount && currentequation.currentState.num){
+            if(isNaN(currentnum)){
+                displayWarning("Invalid format.");
+                return;
+            }
             if(currentnum) currentequation.loadState();
             currentnum = ")";
             currentequation.currentState.paranthesiscount--;
@@ -839,14 +876,14 @@ function loadDisplay(array){
                 let convert = Number(newnum1[0]);
                 convert = convert.toLocaleString("en-US");
                 convert = convert + '.' + newnum1[1];
-                if(convert.toString().length > 15) convert = expo(convert, 15);
+                if(convert.toString().length > 15) convert = expo(convert, 8);
                 lengths += convert.length;
                 display = display + `<span>${convert.toLocaleUpperCase()}</span>`;
                 continue;
             }
             let convert = Number(array.equation[i]);
             convert = convert.toLocaleString("en-US");
-            if(array.equation[i].toString().length > 15) convert = expo(convert, 15);
+            if(array.equation[i].toString().length > 15) convert = expo(convert, 8);
             lengths += array.equation[i].length;
             display = display + `<span>${convert.toLocaleUpperCase()}</span>`;
         }
@@ -875,7 +912,7 @@ function loadDisplay(array){
             }
             let convert = Number(currentnum);
             console.log(`convert length  ${convert.length} convert value ${convert}`);
-            if(convert.toString().length > 15) convert = expo(convert, 15);
+            if(convert.toString().length > 15) convert = expo(convert, 8);
             convert = convert.toLocaleString("en-US");
             display = display + `<span>${convert.toLocaleUpperCase()}</span>`;
         }
