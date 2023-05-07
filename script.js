@@ -317,7 +317,7 @@ function loadHistory(){
         const equation = document.createElement('div');
         const sum = document.createElement('div');
         equation.setAttribute('id', i);
-        sum.setAttribute('id', `${i}b`);
+        sum.setAttribute('id', i);
         equation.classList.add('equation','hover');
         sum.classList.add('sum','hover');
 
@@ -328,15 +328,31 @@ function loadHistory(){
 
     }
     const newequations = document.querySelectorAll(`.equation`);
+    const newsums = document.querySelectorAll(`.sum`);
     newequations.forEach(newequation=>{
         newequation.addEventListener('click',loadEquation);
     })
+    newsums.forEach(newsum =>{
+        newsum.addEventListener('click', loadSum);
+    })
 }
 
-function mergeCheck(e){
-    let mergevalue = {
-        value: equations[e.currentTarget.id].equation[0],
-        state: equations[e.currentTarget.id].state[0]
+function mergeCheck(e,state){
+    let mergevalue;
+    if(state == "equation"){
+        mergevalue = {
+            value: equations[e.currentTarget.id].equation[0],
+            state: equations[e.currentTarget.id].state[0]
+        }
+    }else{
+        mergevalue = {
+            value: equations[e.currentTarget.id].sum,
+            state: {
+                paranthesiscount: 0,
+                num: true,
+                funct: false,
+            }
+        }
     }
     let mainvalue;
     if(currentnum){
@@ -386,8 +402,9 @@ function mergeCheck(e){
             return false;
         }
     }
-
+    console.log(`mainvalue num state ${mainvalue.state.num} \n mergevalue num state ${mergevalue.state.num}`)
     if(mainvalue.state.num && mergevalue.state.num){
+        console.log('merge numcheck pass');
         if(isNaN(Number(mainvalue.value) + Number(mergevalue.value))){
             displayWarning('Invalid format.');
             return;
@@ -403,11 +420,35 @@ function mergeCheck(e){
 
 
 function loadSum(e){
-
+    console.log('loadsum is here');
+    if(mergeCheck(e,"sum")){
+        let mergevalue = equations[e.currentTarget.id].sum;
+        console.log('loadsum is here 2');
+        if(currentnum){
+            if(checkLength(currentnum.toString() + mergevalue.toString(),15)){
+                displayWarning("Can't enter more than 15 digits.");
+                return;
+            }else{
+                currentnum = currentnum.toString() + mergevalue.toString();
+                stateChange('number');
+                loadInput();
+                solutionCheck = false;
+                previewOperation();
+                return;
+            }
+        }else{
+            currentnum = mergevalue;
+            stateChange('number');
+            loadInput();
+            solutionCheck = false;
+            previewOperation();
+            return;
+        }
+    }
 }
 
 function loadEquation(e){
-    if(mergeCheck(e)){
+    if(mergeCheck(e,'equation')){
         let mergeequation = equations[e.currentTarget.id];
         let mainequation = currentequation;
         let newequation = new equation;
