@@ -93,10 +93,7 @@ function displayHistory(){
     }
     const historydisplay = document.querySelector(".equations");
     historydisplay.classList.toggle("show");
-    const historyimage = document.querySelector('.history').src;
-    console.log(`history lesson and ${historyimage}`);
     if(history.getAttribute('src') == 'images/clock-active.png'){
-        console.log('we see ya boi');
         history.src = "images/calculatoricon.png";
         return;
     }
@@ -131,7 +128,6 @@ function loadNumber(e){
         return;
     }
     if(!currentnum){
-        console.log(`num is false`);
         currentnum = e.target.textContent;
         stateChange('number');
         loadInput();
@@ -158,7 +154,6 @@ function loadNumber(e){
         if(percCheck(currentnum)){
             stateChange('number');
         }
-        console.log('solutionchack');
         if(checkLength(currentnum,15)){
             displayWarning("Can't enter more than 15 digits.");
             return;
@@ -238,19 +233,15 @@ function previewOperation(){
             return;
         }
         solution = solution.toLocaleString("en-US").replaceAll(',','');
-        console.log(`hi solo pre ${solution} solution length ${solution.toString().length}`);
         if(solution.toString().includes('.')){
             solution = Math.round((Number(solution) + Number.EPSILON) * 100) / 100;
         }
-        console.log(`hi solo pre 2 ${solution} solution length ${solution.toString().length}`);
         let truenum = solution.toLocaleString("en-US").replaceAll(',','');
         if(solution.toString().length > 15) solution = expo(solution, 8);
         if(truenum.toString().length > 15) solution = expo(Number(solution),8);
-        console.log(`hi solo ${solution.toLocaleString("en-US")} solution length ${solution.toString().length}`);
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".solution");
     }
     else{
-        console.log("preview");
         loadSolution('', ".solution");
         return;
     }
@@ -280,15 +271,12 @@ function startOperation(){
             return;
         }
         solution = solution.toLocaleString("en-US").replaceAll(',','');
-        console.log(`hi solo pre ${solution.toLocaleString("en-US")} solution length ${solution.toString().length}`);
         if(solution.toString().includes('.')){
             solution = Math.round((Number(solution) + Number.EPSILON) * 100) / 100;
         }
-        console.log(`hi solo pre 2 ${solution} solution length ${solution.toString().length}`);
         let truenum = solution.toLocaleString("en-US").replaceAll(',','');
         if(solution.toString().length > 15) solution = expo(solution, 8);
         if(truenum.toString().length > 15) solution = expo(Number(solution),8);
-        console.log(`hi solo ${solution} solution length ${solution.toString().length}`);
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".input");
         fontCheck(solution.toLocaleString("en-US").length);
         loadSolution('', ".solution");
@@ -318,7 +306,6 @@ function loadHistory(){
     const equationcontainer = document.querySelector('.equationcontainer');
     equationcontainer.innerHTML = '';
     for (let i = 0; i< equations.length; i++){
-        console.log(`currentequation being looped 4 hjstory ${equations[i]} index = ${i}`);
         let equationcontent = loadDisplay(equations[i]);
         const equation = document.createElement('div');
         const sum = document.createElement('div');
@@ -372,7 +359,6 @@ function mergeCheck(e,state){
             state: currentequation.state[currentequation.state.length-1]
         }
     }
-    console.log(`mainvalue: ${mainvalue.value} merge value: ${mergevalue.value}`);
     if(!mainvalue.value){
         return true;
     }
@@ -386,7 +372,6 @@ function mergeCheck(e,state){
         }
     }
     if(mainvalue.value == ")" || percCheck(mainvalue.value) || mergevalue.value == "("){
-        console.log('multiply triggered');
         loadMultiplty();
         currentequation.loadState();
         currentnum = null;
@@ -408,9 +393,7 @@ function mergeCheck(e,state){
             return false;
         }
     }
-    console.log(`mainvalue num state ${mainvalue.state.num} \n mergevalue num state ${mergevalue.state.num}`)
     if(mainvalue.state.num && mergevalue.state.num){
-        console.log('merge numcheck pass');
         if(isNaN(Number(mainvalue.value) + Number(mergevalue.value))){
             displayWarning('Invalid format.');
             return;
@@ -426,10 +409,8 @@ function mergeCheck(e,state){
 
 
 function loadSum(e){
-    console.log('loadsum is here');
     if(mergeCheck(e,"sum")){
         let mergevalue = equations[e.currentTarget.id].sum;
-        console.log('loadsum is here 2');
         if(currentnum){
             if(checkLength(currentnum.toString() + mergevalue.toString(),15)){
                 displayWarning("Can't enter more than 15 digits.");
@@ -478,7 +459,6 @@ function loadEquation(e){
             newequation.state.push(mainequation.state[mainequation.state.length-1]);
             if(mergeequation.state[mergeequation.state.length-1].num && mergeequation.equation[mergeequation.equation.length-1] != ')'){
                 numChecker = true;
-                console.log(`numcheck is true 1 ${mergeequation.state[mergeequation.state.length-1].num} & ${mergeequation.state}`);
             }
             for(let i = 1; i < mergeequation.equation.length; i++){
                 if(numChecker && i == mergeequation.equation.length -1){
@@ -504,7 +484,6 @@ function loadEquation(e){
         }
         if(mergeequation.state[mergeequation.state.length-1].num && mergeequation.equation[mergeequation.equation.length-1] != ')'){
             numChecker = true;
-            console.log('numcheck is true 1');
         }
         for(let i = 0; i < mergeequation.equation.length; i++){
             if(numChecker && i == mergeequation.equation.length -1){
@@ -548,7 +527,6 @@ function numCheck(){
             return;
         }
         if(currentnum.includes('-')){
-            console.log('hey');
              currentnum = currentnum.replace('-','');
             return true;
         }
@@ -603,9 +581,7 @@ function loadBackspace(){
             if(solutionCheck) solutionCheck = !solutionCheck;
             let newnum = currentnum.toString().split('');
             newnum.pop();
-            console.log(`b4 back ${newnum} and current num ${currentnum}`);
             currentnum = newnum.toString().replaceAll(',','');
-            console.log(`backspace num ${currentnum}`);
             loadInput();
             previewOperation();
             return;
@@ -613,7 +589,6 @@ function loadBackspace(){
     }
     if(!currentnum){
         currentnum = currentequation.equation.pop();
-        console.log(`currentnum pop ${currentnum}`);
         currentequation.state.pop();
         if(currentnum.toString().length == 1){
             currentnum = null;
@@ -628,7 +603,6 @@ function loadBackspace(){
             let newnum = currentnum.toString().split('');
             newnum.pop();
             currentnum = newnum.toString().replaceAll(',','');
-            console.log(`backspace num ${currentnum}`);
             loadInput();
             previewOperation();
             return;
@@ -642,7 +616,6 @@ function unloadFunction(){
         if(currentequation.equation[currentequation.equation.length - 1] == functions[i]){
             currentnum = currentequation.equation.pop();
             currentequation.state.pop();
-            console.log(`function found`);
             return;
         }
     }
@@ -708,7 +681,6 @@ function percCheck(element){
 
 
 function loadFunction(e){
-    console.log('here func');
     if(e.target.textContent == "( )"){
         parenthesisLoader();
         if(currentequation.equation.length){
@@ -848,23 +820,18 @@ function checkParenthesis(array){
     let pare1;
     let pare2;
     let paracount = 0;
-    console.log(`equation length = ${equation.length}`);
     for(let i = array.equation.length - 1; i >= 0; i--){
-        console.log(`current equation ${array.equation[i]} last equation ${array.equation[currentequation.equation.length - 1]}`)
         if (array.equation[array.equation.length - 1] != ')' || currentnum){
-            console.log("no para");
             pare1 = null;
             pare2 = null;
             break;
         }
         if(paracount == 0 && array.equation[i].toString() == "("){
-            console.log('para accept');
             pare1 = i;
             pare2 = array.equation.length - 1;
             break;
         }
         if(i != array.equation.length - 1 && array.equation[i] == ")"){
-            console.log("hi there");
             paracount++;
             continue;
         }
@@ -872,7 +839,6 @@ function checkParenthesis(array){
             paracount--;
         }
     }
-    console.log(`para1 = ${pare1} para2 = ${pare2}`);
     if(!pare1 || !pare2){
         return null;
     }
@@ -891,10 +857,8 @@ function loadDisplay(array){
     let lengths = 0;
     let functions = ['%','x','-','+','÷']
     for (let i = 0; i < array.equation.length; i++){
-        console.log(`current equation ${array.equation}`);
         if(pareload){
             if (i == pareload[0] || i == pareload[1]){
-                console.log('check here');
                 display = display + `<span class ="function">${array.equation[i]}</span>`;
                 lengths++;
                 continue;
@@ -913,7 +877,6 @@ function loadDisplay(array){
                 lengths++;
                 continue;
             }
-            console.log(`array index is ${array.equation[i]}`);
             if(array.equation[i].toString().includes('.')){
                 newnum1 = array.equation[i].toString().split('.');
                 let convert = Number(newnum1[0]);
@@ -946,7 +909,6 @@ function loadDisplay(array){
                 let newnum1 = currentnum.toString().split('.');
                 let convert = Number(newnum1[0]);
                 convert = convert.toLocaleString("en-US");
-                console.log(`newnum1 ${newnum1[1]}`);
                 convert = convert + '.' + newnum1[1];
   
                 display = display + `<span>${convert.toLocaleUpperCase()}</span>`;
@@ -954,13 +916,11 @@ function loadDisplay(array){
                 return display;
             }
             let convert = Number(currentnum);
-            console.log(`convert length  ${convert.length} convert value ${convert}`);
             if(convert.toString().length > 15) convert = expo(convert, 8);
             convert = convert.toLocaleString("en-US");
             display = display + `<span>${convert.toLocaleUpperCase()}</span>`;
         }
     }
-    console.log(`length here ${lengths}`);
     fontCheck(lengths);
 
 
@@ -997,11 +957,8 @@ function decimalCheck(e){
         return;
     }
     else if(!currentequation.currentState.num){
-        console.log(`here num`)
-        console.log(currentnum);
         currentnum = 0 + e.target.textContent.toString();
         stateChange("number");
-        console.log(currentnum);
     }
     else{
         currentnum = currentnum + e.target.textContent.toString();
@@ -1010,27 +967,19 @@ function decimalCheck(e){
 function operate(array){
     if(array.length == 1) return array[0];
     //executing PEMDAS
-    console.log(array);
     //parenthesis
     let parantheis = search(array, ['(']);
     if(parantheis[0]){
         let startIndex = parantheis[1];
         let endIndex = parenthesisSearch(array, startIndex);
 
-        console.log(`end index ${endIndex}`);
-
-
         let newequation = parenthesisParser(array,startIndex,endIndex);
 
-        console.log(`parenthesis newequation ${newequation}`)
 
         let sum = operate(newequation);
 
-        console.log(`parenthesis sum ${sum} startindex= ${startIndex} endindex= ${endIndex}`)
 
         let finalequation = arrayBuilder(array, startIndex, endIndex, sum);
-
-        console.log(`parenthesis final ${finalequation}`)
 
         return operate(finalequation);
 
@@ -1039,15 +988,12 @@ function operate(array){
 
     let percentag = search(array,['%']);
 
-    console.log(percentag[0]);
-
     if(percentag[0]){
         let value = array[percentag[1]- 1];
 
         let percent = percentage(Number(value));
 
         let newequation = arrayBuilder(array,percentag[1]-1,percentag[1],percent);
-        console.log(`parcentage array ${newequation}`);
         return operate(newequation);
     }
 
@@ -1066,13 +1012,11 @@ function operate(array){
         }
 
         let product = arrayBuilder(array,md[1]-1, md[1]+1,pd);
-        console.log(`multiply/divide array ${product}`);
         return operate(product);
     }
 
     //Add/Subtract
     let as = search(array,['+','-']);
-    console.log(`add/subtract ${as}`);
 
     let sum;
 
@@ -1086,7 +1030,6 @@ function operate(array){
         }
 
         let newequation = arrayBuilder(array,as[1]-1,as[1]+1,sum);
-        console.log(`add currentnum.toString() + /subtract new equation ${newequation}`)
         return operate(newequation);
     }
 
@@ -1098,9 +1041,6 @@ function search(array, items){
     for(let i = 0; i < array.length; i++){
         let indexString = array[i].toString();
         for(let j = 0; j < items.length; j++){
-            console.log(`${items[j]} = ${indexString}`);
-            let test = indexString.includes(items[j]);
-            console.log(test);
             if(indexString == items[j]){
             return [true, i, items[j]];
             }
@@ -1166,10 +1106,8 @@ function parenthesisSearch(array, startIndex){
 
 
         if(indexString == "("){
-            console.log(`here`)
             paracount++;
         }
-        console.log(`check paracheck = ${paracount}  index = ${indexString.includes(')')} indice = ${i} array length = ${array.length}`)
         if(!paracount && indexString == ")"){
             return i;
         }
