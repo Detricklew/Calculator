@@ -17,6 +17,16 @@ function equation(){
         newstate.num = this.currentState.num;
         newstate.funct = this.currentState.funct;
         this.state.push(newstate);
+        return;
+    }
+    this.clearState = function (){
+        this.equation = [];
+        this.state = [];
+        this.currentState = {
+            paranthesiscount: 0,
+            num: false,
+            funct: false,
+        };
     }
 }
 
@@ -101,7 +111,7 @@ function loadNumber(e){
         startOperation();
         return;
     }
-    if(percCheck() || currentequation.equation[currentequation.equation.length - 1] == ")" && !currentnum) loadMultiplty();
+    if(percCheck(currentnum) || currentequation.equation[currentequation.equation.length - 1] == ")" && !currentnum) loadMultiplty();
     if(e.target.textContent == "+/-"){
         let check = numCheck();
         if(check){
@@ -114,7 +124,7 @@ function loadNumber(e){
         if(solutionCheck){
             stateChange('solution');
         }
-        if(checkLength()) return;
+        if(checkLength(currentnum,15)) return;
         decimalCheck(e);
         loadInput();
         previewOperation();
@@ -145,15 +155,12 @@ function loadNumber(e){
             previewOperation();
             return;
         }
-        if(percCheck()){
+        if(percCheck(currentnum)){
             stateChange('number');
         }
         console.log('solutionchack');
-        if(checkLength()){
-            let check = displayWarning("Can't enter more than 15 digits.");
-            if(!check){
-                displayWarning("Can't enter more than 15 digits.");
-            }
+        if(checkLength(currentnum,15)){
+            displayWarning("Can't enter more than 15 digits.");
             return;
         } ;
         currentnum = currentnum.toString() + e.target.textContent.toString();
@@ -183,7 +190,7 @@ function displayWarning(warning){
 }
 
 function clearDisplay(){
-    currentequation.equation = [];
+    currentequation.clearState();
     currentnum = null
     let input = document.querySelector('.input');
     input.innerHTML = 0;
@@ -214,7 +221,12 @@ function previewOperation(){
             loadSolution('', ".solution");
             return;
         }
-        solution = Math.round((solution + Number.EPSILON) * 100) / 100;
+        solution = solution.toLocaleString().replaceAll(',','');
+        console.log(`hi solo pre ${solution} solution length ${solution.toString().length}`);
+        if(solution.toString().includes('.')){
+            solution = Math.round((Number(solution) + Number.EPSILON) * 100) / 100;
+        }
+        console.log(`hi solo pre 2 ${solution} solution length ${solution.toString().length}`);
         if(solution.toString().length > 15) solution = expo(solution, 15);
         console.log(`hi solo ${solution} solution length ${solution.toString().length}`);
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".solution");
@@ -246,22 +258,23 @@ function startOperation(){
         solution = solution.toLocaleString().replaceAll(',','');
         console.log(`hi solo pre ${solution} solution length ${solution.toString().length}`);
         if(solution.toString().includes('.')){
-            solution = Math.round((solution + Number.EPSILON) * 100) / 100;
+            solution = Math.round((Number(solution) + Number.EPSILON) * 100) / 100;
         }
         console.log(`hi solo pre 2 ${solution} solution length ${solution.toString().length}`);
-        currentequation.sum = solution;
         if(solution.toString().length > 15) solution = expo(solution, 15);
         console.log(`hi solo ${solution} solution length ${solution.toString().length}`);
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".input");
         fontCheck(solution.toLocaleString("en-US").length);
         loadSolution('', ".solution");
-        currentequation.loadState();
+        if(currentnum)currentequation.loadState();
         solutionCheck = true;
+        currentequation.sum = solution;
         equations.push(currentequation);
+        currentnum = null;
+        loadHistory();
         currentequation = new equation;
         currentnum = solution;
         stateChange('number');
-        loadHistory();
     }
     else{
         if(currentequation.equation.length){
@@ -279,21 +292,181 @@ function loadHistory(){
     const equationcontainer = document.querySelector('.equationcontainer');
     equationcontainer.innerHTML = '';
     for (let i = 0; i< equations.length; i++){
-        
+        console.log(`currentequation being looped 4 hjstory ${equations[i]} index = ${i}`);
+        let equationcontent = loadDisplay(equations[i]);
         const equation = document.createElement('div');
         const sum = document.createElement('div');
-        let equationcontent = equations[i].equation.toString().replaceAll(',','');
-        
         equation.setAttribute('id', i);
         sum.setAttribute('id', `${i}b`);
         equation.classList.add('equation','hover');
         sum.classList.add('sum','hover');
 
-        equation.textContent = equationcontent;
+        equation.innerHTML = equationcontent;
         sum.textContent = equations[i].sum;
-
         equationcontainer.appendChild(equation);
         equationcontainer.appendChild(sum);
+
+    }
+    const newequations = document.querySelectorAll(`.equation`);
+    newequations.forEach(newequation=>{
+        newequation.addEventListener('click',loadEquation);
+    })
+}
+
+function mergeCheck(e){
+    let mergevalue = {
+        value: equations[e.currentTarget.id].equation[0],
+        state: equations[e.currentTarget.id].state[0]
+    }
+    let mainvalue;
+    if(currentnum){
+        mainvalue ={
+            value: currentnum,
+            state: currentequation.currentState
+        }
+    }else{
+        mainvalue ={
+            value: currentequation.equation[currentequation.equation.length-1],
+            state: currentequation.state[currentequation.state.length-1]
+        }
+    }
+    console.log(`mainvalue: ${mainvalue.value} merge value: ${mergevalue.value}`);
+    if(!mainvalue.value){
+        return true;
+    }
+    if(mainvalue.state.funct){
+        if(currentnum){
+            currentequation.loadState();
+            currentnum = null;
+            return true;
+        }else{
+            return true;
+        }
+    }
+    if(mainvalue.value == ")" || percCheck(mainvalue.value) || mergevalue.value == "("){
+        console.log('multiply triggered');
+        loadMultiplty();
+        currentequation.loadState();
+        currentnum = null;
+        return true;
+    }
+
+    if(mainvalue.value.toString().includes('.')){
+        if(!mergevalue.value.toString().includes('.')){
+            let lengthcheck = mainvalue.value.toString().split('.');
+            lengthcheck = lengthcheck[1].toString() + mergevalue.value.toString();
+            if(checkLength(lengthcheck,10)){
+                displayWarning('Invalid format.');
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            displayWarning('Invalid format.');
+            return false;
+        }
+    }
+
+    if(mainvalue.state.num && mergevalue.state.num){
+        if(isNaN(Number(mainvalue.value) + Number(mergevalue.value))){
+            displayWarning('Invalid format.');
+            return;
+        }else{
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+
+
+function loadSum(e){
+
+}
+
+function loadEquation(e){
+    if(mergeCheck(e)){
+        let mergeequation = equations[e.currentTarget.id];
+        let mainequation = currentequation;
+        let newequation = new equation;
+        let numChecker;
+
+        for(let i = 0; i < mainequation.equation.length; i++){
+            newequation.equation.push(mainequation.equation[i]);
+        }
+        for (let i = 0; i < mainequation.state.length; i++){
+            newequation.state.push(mainequation.state[i]);
+        }
+        if(currentnum){
+            if(checkLength(currentnum.toString() + mergeequation.equation[0].length,15)){
+                displayWarning("Can't enter more than 15 digits.");
+                return;
+            }
+            currentnum = currentnum.toString() + mergeequation.equation[0];
+            newequation.equation.push(currentnum);
+            currentnum = null;
+            mainequation.loadState();
+            newequation.state.push(mainequation.state[mainequation.state.length-1]);
+            if(mergeequation.state[mergeequation.state.length-1].num && mergeequation.equation[mergeequation.equation.length-1] != ')'){
+                numChecker = true;
+                console.log(`numcheck is true 1 ${mergeequation.state[mergeequation.state.length-1].num} & ${mergeequation.state}`);
+            }
+            for(let i = 1; i < mergeequation.equation.length; i++){
+                if(numChecker && i == mergeequation.equation.length -1){
+                    currentnum = mergeequation.equation[i];
+                    continue;
+                }
+                newequation.equation.push(mergeequation.equation[i]);
+            }
+            for(let i = 1; i < mergeequation.state.length; i++){
+                if(numChecker && i == mergeequation.equation.length -1){
+                    newequation.currentState.num = mergeequation.state[i].num;
+                    newequation.currentState.funct = mergeequation.state[i].funct;
+                    continue;
+                }
+                newequation.state.push(mergeequation.state[i]);
+            }
+            newequation.currentState.paranthesiscount = mergeequation.state[mergeequation.state.length - 1].paranthesiscount + currentequation.state[currentequation.state.length-1].paranthesiscount;
+            currentequation = newequation;
+            loadInput();
+            solutionCheck = false;
+            previewOperation();
+            return;
+        }
+        if(mergeequation.state[mergeequation.state.length-1].num && mergeequation.equation[mergeequation.equation.length-1] != ')'){
+            numChecker = true;
+            console.log('numcheck is true 1');
+        }
+        for(let i = 0; i < mergeequation.equation.length; i++){
+            if(numChecker && i == mergeequation.equation.length -1){
+                currentnum = mergeequation.equation[i];
+                continue;
+            }
+            newequation.equation.push(mergeequation.equation[i]);
+        }
+        for(let i = 0; i < mergeequation.state.length; i++){
+            if(numChecker && i == mergeequation.equation.length -1){
+                newequation.currentState.num = mergeequation.state[i].num;
+                newequation.currentState.funct = mergeequation.state[i].funct;
+                continue;
+            }
+            newequation.state.push(mergeequation.state[i]);
+        }
+        if(currentequation.state.paranthesiscount){
+            newequation.currentState.paranthesiscount = mergeequation.state[mergeequation.state.length-1].paranthesiscount + currentequation.state[currentequation.state.length-1].paranthesiscount;
+        }else{
+            newequation.currentState.paranthesiscount = mergeequation.state[mergeequation.state.length-1].paranthesiscount;
+        }
+        currentequation = newequation;
+        loadInput();
+        solutionCheck = false;
+        previewOperation();
+        return;
+
+    }else{
+        return;
     }
 }
 
@@ -347,6 +520,7 @@ function loadBackspace(){
     if(currentnum){
         if(currentnum.toString().length == 1){
             currentnum = null;
+            if(solutionCheck) solutionCheck = !solutionCheck;
             unloadState();
             unloadFunction();
             unloadNumber();
@@ -447,11 +621,11 @@ function percentageCheck(){
     }
 }
 
-function percCheck(){
-    if(!currentnum){
+function percCheck(element){
+    if(!element){
         return false;
     }
-    let percCheck = currentnum.toString();
+    let percCheck = element.toString();
     if(percCheck.includes('%')){
         return true;
     }
@@ -573,17 +747,17 @@ function loadBackspaceImage(){
 
 function loadInput(){
     let input = document.querySelector('.input');
-    let display = loadDisplay();
+    let display = loadDisplay(currentequation);
     loadBackspaceImage();
     input.innerHTML = display;
     return;
 }
 
-function checkLength(){
-    if(!currentnum){
+function checkLength(number,length){
+    if(!number){
         return false;
     }
-    if(currentnum.toString().length == 15){
+    if(number.toString().length >= length){
         return true;
     }else{
         return false;
@@ -627,8 +801,8 @@ function checkParenthesis(){
     }
 }
 
-function loadDisplay(){
-    if(!currentnum && !currentequation.equation.length){
+function loadDisplay(array){
+    if(!currentnum && !array.equation.length){
         return 0;
     }
     let display = '';
@@ -636,30 +810,32 @@ function loadDisplay(){
     let pareload = checkParenthesis();
     let lengths = 0;
     let functions = ['%','x','-','+','÷']
-    for (let i = 0; i < currentequation.equation.length; i++){
+    for (let i = 0; i < array.equation.length; i++){
+        console.log(`current equation ${array.equation}`);
         if(pareload){
             if (i == pareload[0] || i == pareload[1]){
                 console.log('check here');
-                display = display + `<span class ="function">${currentequation.equation[i]}</span>`;
+                display = display + `<span class ="function">${array.equation[i]}</span>`;
                 lengths++;
                 continue;
             }
         }
         for(let j = 0; j < functions.length; j++){
-            if(currentequation.equation[i] == functions[j]){
-                display = display + `<span class ="function">${currentequation.equation[i]}</span>`;
+            if(array.equation[i] == functions[j]){
+                display = display + `<span class ="function">${array.equation[i]}</span>`;
                 functcheck = true;
                 lengths++;
             }
         }
         if(!functcheck){
-            if(currentequation.equation[i]== "(" || currentequation.equation[i] == ")"){
-                display = display + currentequation.equation[i];
+            if(array.equation[i]== "(" || array.equation[i] == ")"){
+                display = display + array.equation[i];
                 lengths++;
                 continue;
             }
-            if(currentequation.equation[i].toString().includes('.')){
-                newnum1 = currentequation.equation[i].toString().split('.');
+            console.log(`array index is ${array.equation[i]}`);
+            if(array.equation[i].toString().includes('.')){
+                newnum1 = array.equation[i].toString().split('.');
                 let convert = Number(newnum1[0]);
                 convert = convert.toLocaleString("en-US");
                 convert = convert + '.' + newnum1[1];
@@ -668,10 +844,10 @@ function loadDisplay(){
                 display = display + `<span>${convert.toLocaleUpperCase()}</span>`;
                 continue;
             }
-            let convert = Number(currentequation.equation[i]);
+            let convert = Number(array.equation[i]);
             convert = convert.toLocaleString("en-US");
-            if(currentequation.equation[i].toString().length > 15) convert = expo(convert, 15);
-            lengths += currentequation.equation[i].length;
+            if(array.equation[i].toString().length > 15) convert = expo(convert, 15);
+            lengths += array.equation[i].length;
             display = display + `<span>${convert.toLocaleUpperCase()}</span>`;
         }
         functcheck = false;

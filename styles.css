@@ -66,7 +66,6 @@ body {
 }
 
 .equation{
-
   display: flex;
   justify-content: right;
   margin-bottom: 10px;
@@ -74,7 +73,6 @@ body {
 }
 
 .sum{
-  display: flex;
   justify-content: right;
   margin-bottom: 20px;
   color: #9cd260;
