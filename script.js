@@ -206,7 +206,13 @@ function clearDisplay(){
 }
 
 function loadMultiplty(){
-    if(currentnum) currentequation.loadState();
+    if(currentnum){
+        if(isNaN(currentnum)){
+            displayWarning('Invalid Format.');
+            return;
+        }
+        currentequation.loadState();
+    }
     currentnum = "x";
     stateChange('function');
     return;
