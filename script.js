@@ -239,6 +239,7 @@ function previewOperation(){
         let truenum = solution.toLocaleString("en-US").replaceAll(',','');
         if(solution.toString().length > 15) solution = expo(solution, 8);
         if(truenum.toString().length > 15) solution = expo(Number(solution),8);
+        if(truenum.toString().length <= 15) solution = Number(solution);
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".solution");
     }
     else{
@@ -277,6 +278,7 @@ function startOperation(){
         let truenum = solution.toLocaleString("en-US").replaceAll(',','');
         if(solution.toString().length > 15) solution = expo(solution, 8);
         if(truenum.toString().length > 15) solution = expo(Number(solution),8);
+        if(truenum.toString().length <= 15) solution = Number(solution);
         loadSolution(solution.toLocaleString("en-US").toUpperCase(), ".input");
         fontCheck(solution.toLocaleString("en-US").length);
         loadSolution('', ".solution");
